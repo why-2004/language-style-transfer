@@ -158,16 +158,16 @@ def transfer(model, decoder, sess, args, vocab, data0, data1, out_path):
     batches, order0, order1 = get_batches(data0, data1,
         vocab.word2id, args.batch_size)
 
-    #data0_rec, data1_rec = [], []
-    data0_tsf, data1_tsf = [], []
+    data0_rec, data1_rec = [], []
+    #data0_tsf, data1_tsf = [], []
     losses = Accumulator(len(batches), ['loss', 'rec', 'adv', 'd0', 'd1'])
     for batch in batches:
         rec, tsf = decoder.rewrite(batch)
         half = batch['size'] / 2
-        #data0_rec += rec[:half]
-        #data1_rec += rec[half:]
-        data0_tsf += tsf[:half]
-        data1_tsf += tsf[half:]
+        data0_rec += rec[:half]
+        data1_rec += rec[half:]
+        #data0_tsf += tsf[:half]
+        #data1_tsf += tsf[half:]
 
         loss, loss_rec, loss_adv, loss_d0, loss_d1 = sess.run([model.loss,
             model.loss_rec, model.loss_adv, model.loss_d0, model.loss_d1],
@@ -175,16 +175,16 @@ def transfer(model, decoder, sess, args, vocab, data0, data1, out_path):
         losses.add([loss, loss_rec, loss_adv, loss_d0, loss_d1])
 
     n0, n1 = len(data0), len(data1)
-    #data0_rec = reorder(order0, data0_rec)[:n0]
-    #data1_rec = reorder(order1, data1_rec)[:n1]
-    data0_tsf = reorder(order0, data0_tsf)[:n0]
-    data1_tsf = reorder(order1, data1_tsf)[:n1]
+    data0_rec = reorder(order0, data0_rec)[:n0]
+    data1_rec = reorder(order1, data1_rec)[:n1]
+    #data0_tsf = reorder(order0, data0_tsf)[:n0]
+    #data1_tsf = reorder(order1, data1_tsf)[:n1]
 
     if out_path:
-        #write_sent(data0_rec, out_path+'.0'+'.rec')
-        #write_sent(data1_rec, out_path+'.1'+'.rec')
-        write_sent(data0_tsf, out_path+'.0'+'.tsf')
-        write_sent(data1_tsf, out_path+'.1'+'.tsf')
+        write_sent(data0_rec, out_path+'.0'+'.rec')
+        write_sent(data1_rec, out_path+'.1'+'.rec')
+        #write_sent(data0_tsf, out_path+'.0'+'.tsf')
+        #write_sent(data1_tsf, out_path+'.1'+'.tsf')
 
     return losses
 
