@@ -163,7 +163,7 @@ def transfer(model, decoder, sess, args, vocab, data0, data1, out_path):
     losses = Accumulator(len(batches), ['loss', 'rec', 'adv', 'd0', 'd1'])
     for batch in batches:
         rec, tsf = decoder.rewrite(batch)
-        half = batch['size'] / 2
+        half = tf.cast(batch['size'] / 2, tf.int32)
         #data0_rec += rec[:half]
         #data1_rec += rec[half:]
         data0_tsf += tsf[:half]
