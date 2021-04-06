@@ -116,7 +116,7 @@ class Model(object):
         #####   discriminator   #####
         # a batch's first half consists of sentences of one style,
         # and second half of the other
-        half = tf.cast((self.batch_size / 2),tf.int32)
+        half = self.batch_size // 2
         zeros, ones = self.labels[:half], self.labels[half:]
         soft_h_tsf = soft_h_tsf[:, :1+self.batch_len, :]
 
@@ -163,7 +163,7 @@ def transfer(model, decoder, sess, args, vocab, data0, data1, out_path):
     losses = Accumulator(len(batches), ['loss', 'rec', 'adv', 'd0', 'd1'])
     for batch in batches:
         rec, tsf = decoder.rewrite(batch)
-        half = tf.cast(batch['size'] / 2, tf.int32)
+        half = batch['size'] // 2
         #data0_rec += rec[:half]
         #data1_rec += rec[half:]
         data0_tsf += tsf[:half]
