@@ -54,10 +54,12 @@ class Model(object):
         self.labels = tf.compat.v1.placeholder(tf.float32, [None],
                                                name='labels')
 
+
         labels = tf.reshape(self.labels, [-1, 1])
 
         embedding = tf.compat.v1.get_variable('embedding',
                                               initializer=vocab.embedding.astype(np.float32))
+
         with tf.compat.v1.variable_scope('projection'):
             proj_W = tf.compat.v1.get_variable('W', [dim_h, vocab.size])
             proj_b = tf.compat.v1.get_variable('b', [vocab.size])
@@ -71,6 +73,7 @@ class Model(object):
         cell_e = create_cell(dim_h, n_layers, self.dropout)
         _, z = tf.compat.v1.nn.dynamic_rnn(cell_e, enc_inputs,
                                            initial_state=init_state, scope='encoder')
+
         z = z[:, dim_y:]
 
         # cell_e = create_cell(dim_z, n_layers, self.dropout)
@@ -85,6 +88,7 @@ class Model(object):
         cell_g = create_cell(dim_h, n_layers, self.dropout)
         g_outputs, _ = tf.compat.v1.nn.dynamic_rnn(cell_g, dec_inputs,
                                                    initial_state=self.h_ori, scope='generator')
+
 
         # attach h0 in the front
         teach_h = tf.concat([tf.expand_dims(self.h_ori, 1), g_outputs], 1)
@@ -168,6 +172,7 @@ def transfer(model, decoder, sess, args, vocab, data0, data1, out_path):
         half = batch['size'] // 2
         # data0_rec += rec[:half]
         # data1_rec += rec[half:]
+
         data0_tsf += tsf[:half]
         data1_tsf += tsf[half:]
 
